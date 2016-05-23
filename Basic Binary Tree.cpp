@@ -94,8 +94,10 @@ void level_order_with_queue(struct node *root)
     while(temp_node!=NULL)
         {
             cout<<temp_node->data<<" == ";
-            node_queue.push(temp_node->left);
-            node_queue.push(temp_node->right);
+            if(temp_node->left)
+                node_queue.push(temp_node->left);
+            if(temp_node->right)
+                node_queue.push(temp_node->right);
             if(!node_queue.empty())
                 {
                     temp_node = node_queue.front();
@@ -107,6 +109,73 @@ void level_order_with_queue(struct node *root)
                 }
         }
 }
+
+
+
+//Inorder Tree Traversal without Recursion
+//
+void inorder_tree_traversal_without_recursion(struct node *root)
+{
+    if(root==NULL) return;
+    else
+        {
+            stack<struct node *> node_stack;
+            struct node *current_node = root;
+            bool done = 0;
+            while(!done)
+                {
+                    if(current_node!=NULL)
+                        {
+                            node_stack.push(current_node);
+                            current_node = current_node->left;
+                        }
+                    else if(!node_stack.empty())
+                        {
+                            struct node *temp_node = node_stack.top();
+                            node_stack.pop();
+                            cout<<temp_node->data<<" == ";
+                            current_node = temp_node->right;
+                        }
+                    else done=1;
+                }
+        }
+}
+
+
+void inorder_tree_traversal_without_recursion_without_stack(struct node *root)
+{
+    struct node *current_node = root,*pre;
+    while(current_node!=NULL)
+        {
+            if(current_node->left==NULL)
+                {
+                    cout<<current_node->data<<" == ";
+                    current_node = current_node->right;
+                }
+            else
+                {
+                    /* Find the inorder predecessor of current */
+                    pre = current_node->left;
+                    while(pre->right != NULL && pre->right != current_node)
+                        pre = pre->right;
+                    /* Make current as right child of its inorder predecessor */
+                    if(pre->right == NULL)
+                        {
+                            pre->right = current_node;
+                            current_node = current_node->left;
+                        }
+                    /* Revert the changes made in if part to restore the original
+                      tree i.e., fix the right child of predecssor */
+                    else
+                        {
+                            pre->right = NULL;
+                            cout<<current_node->data<<" == ";
+                            current_node = current_node->right;
+                        } /* End of if condition pre->right == NULL */
+                }
+        }
+}
+
 
 int main()
 {
@@ -123,6 +192,10 @@ int main()
     preorder(root);
     cout<<"\n Inorder traversal : "<<endl;
     inorder(root);
+    cout<<"\n Inorder Traversal without Recursion (using stack) : "<<endl;
+    inorder_tree_traversal_without_recursion(root);
+    cout<<" \n Inorder Traversal without Recursion without stack - Morris Traversal : "<<endl;
+    inorder_tree_traversal_without_recursion_without_stack(root);
     cout<<"\n Postorder traversal : "<<endl;
     postorder(root);
     cout<<"\n Level Order Traversal(without Queue) : "<<endl;
